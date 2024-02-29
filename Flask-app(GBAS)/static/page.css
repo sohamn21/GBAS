@@ -1,0 +1,28 @@
+.container {
+    position: relative;
+    height: 100vh;
+    display: flex;
+    align-items: stretch;
+}
+
+.form-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.email-container {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.hidden {
+    display: none;
+}
