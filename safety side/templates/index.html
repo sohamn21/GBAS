@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Categories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Set a beautiful background for the entire page */
+        h1{
+            text-transform: uppercase;
+        }
+        body {
+            background-color: #e1eaea;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        /* Style for the dropdown box */
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e6e9eb;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        /* Center the dropdown */
+        .dropdown-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        /* Define the grid container for displaying icons */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px); /* 4 columns with fixed width */
+            grid-gap: 10px; /* Gap between grid cells */
+            border: 2px solid #5995bc; /* Blue border around the grid */
+            border-radius: 5px;
+            padding: 10px; /* Add some padding to the grid container */
+            background-color: #faf4f4;
+        }
+        /* Define the grid cell styles (icons) */
+        .grid-cell {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #000; /* Black border around each cell */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Add cursor pointer to indicate selection */
+        }
+        img{
+            width:70px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .gradient-background {
+          background: linear-gradient(300deg,  #b40208,#ffffff);
+          background-size: 180% 180%;
+          animation: gradient-animation 18s ease infinite;
+        }
+</style>
+</head>
+<body>
+
+    <h1>Select any two icons and describe the sequence of arrow commands</h1>
+    <div class="dropdown-container">
+        <!-- Dropdown box for selecting categories -->
+        <select id="categorySelect">
+            <option value="Flag">Flag</option>
+            <option value="Numbers">Numbers</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Alphabets">Alphabets</option>
+        </select>
+    </div>
+    <!-- Grid container for displaying icons based on the selected category -->
+    <div class="grid-container" id="grid"></div>
+    <!-- Sign up form -->
+    <form id="signupForm" action="/signup" method="POST" style="display: none;">
+        <input type="hidden" id="selectedIconsInput" name="selectedIcons" value="">
+        <input type="hidden" id="selectedCategoryInput" name="selectedCategory" value="">
+        <label for="arrowInput">Enter the sequence of arrow commands (e.g., ↑, ↓, ←, →): </label>
+        <input type="text" id="arrowInput" name="arrowInput" required>
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <script>
+        let selectedCategory = "Flag";  // Set a default category
+        let selectedIcons = [];
+
+        // Function to calculate Manhattan distance between two points
+        function manhattanDistance(point1, point2) {
+
+            return Math.abs(point1.x - point2.x) * Math.abs(point1.y - point2.y);
+        }
+
+        // Function to display icons based on the selected category
+        function displayIcons() {
+            const categorySelect = document.getElementById('categorySelect');
+            selectedCategory = categorySelect.value;  // Update selectedCategory
+            const grid = document.getElementById('grid');
+            const signupForm = document.getElementById('signupForm');
+
+            // Clear existing icons
+            grid.innerHTML = '';
+            signupForm.style.display = 'none'; // Hide the signup form
+
+            // Load and display icons from the selected category folder
+            for (let i = 1; i <= 16; i++) {
+                const imgElement = document.createElement('img');
+                imgElement.src = `{{ url_for('static', filename='') }}${selectedCategory}/${selectedCategory}${i}.png`;
+                const gridCell = document.createElement('div');
+                gridCell.className = 'grid-cell';
+                gridCell.appendChild(imgElement);
+                gridCell.addEventListener('click', () => handleIconClick(i));
+                grid.appendChild(gridCell);
+            }
+        }
+
+        // Function to handle icon click and store selected icons
+        function handleIconClick(iconIndex) {
+            selectedIcons.push(iconIndex);
+            if (selectedIcons.length === 2) {
+                const selectedIconsInput = document.getElementById('selectedIconsInput');
+                const selectedCategoryInput = document.getElementById('selectedCategoryInput');
+                selectedIconsInput.value = JSON.stringify(selectedIcons);
+                selectedCategoryInput.value = selectedCategory;
+                showSignupForm();
+            }
+        }
+
+        // Function to show the signup form
+        function showSignupForm() {
+            const signupForm = document.getElementById('signupForm');
+            signupForm.style.display = 'block';
+        }
+
+        // Add an event listener to the dropdown box to trigger icon display
+        document.getElementById('categorySelect').addEventListener('change', displayIcons);
+
+        // Add an event listener to the signup form to handle submission
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            fetch('/signup', {
+                method: 'POST',
+                body: new FormData(this),
+            })
+            .then(response => response.text())
+            .then(message => alert(message))
+            .catch(error => console.error('Error:', error));
+        });
+
+        // Initial display of icons
+        displayIcons();
+    </script>
+
+</body>
+</html>

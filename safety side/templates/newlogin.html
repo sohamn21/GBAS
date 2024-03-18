@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8x8 Grid with Shuffled Images and Blue Cells</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            grid-gap: 10px;
+            border: 5px solid #f7f3f3;
+            padding: 10px;
+        }
+        .grid-cell {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grid-cell img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        .flexbox {
+            display: flex;
+            justify-content: center;
+            padding-top: 1rem;
+        }
+        h1 {
+            display: flex;
+            justify-content: center;
+            color: white;
+        }
+        .highlighted {
+            box-shadow: 0 0 10px #00f; /* Add your desired glow effect */
+        }
+    </style>
+</head>
+<body>
+    <h1>Select any 2 icons</h1>
+    <div class="flexbox">
+        <div class="grid-container" id="grid" tabindex="0"> <!-- Added tabindex to make it focusable -->
+            <!-- Icon images will be inserted here -->
+        </div>
+    </div>
+    <div class="flexbox">
+        <input type="text" id="gmail" placeholder="Enter your Gmail address">
+        <button id="signupBtn">Signup</button>
+    </div>
+    
+    <script>
+        // Array of image sources (replace these with your image URLs)
+        const imageSources = [
+        "static/images/Alphabets/Alphabets1.png",
+            "static/images/Alphabets/Alphabets2.png",
+            "static/images/Alphabets/Alphabets3.png",
+            "static/images/Alphabets/Alphabets4.png",
+            "static/images/Alphabets/Alphabets5.png",
+            "static/images/Alphabets/Alphabets6.png",
+            "static/images/Alphabets/Alphabets7.png",
+            "static/images/Alphabets/Alphabets8.png",
+            "static/images/Alphabets/Alphabets9.png",
+            "static/images/Alphabets/Alphabets10.png",
+            "static/images/Alphabets/Alphabets11.png",
+            "static/images/Alphabets/Alphabets12.png",
+            "static/images/Alphabets/Alphabets13.png",
+            "static/images/Alphabets/Alphabets14.png",
+            "static/images/Alphabets/Alphabets15.png",
+            "static/images/Alphabets/Alphabets16.png",
+            "static/images/Flag/Flag1.png",
+            "static/images/Flag/Flag2.png",
+            "static/images/Flag/Flag3.png",
+            "static/images/Flag/Flag4.png",
+            "static/images/Flag/Flag5.png",
+            "static/images/Flag/Flag6.png",
+            "static/images/Flag/Flag7.png",
+            "static/images/Flag/Flag8.png",
+            "static/images/Flag/Flag9.png",
+            "static/images/Flag/Flag10.png",
+            "static/images/Flag/Flag11.png",
+            "static/images/Flag/Flag12.png",
+            "static/images/Flag/Flag13.png",
+            "static/images/Flag/Flag14.png",
+            "static/images/Flag/Flag15.png",
+            "static/images/Flag/Flag16.png",
+            "static/images/Numbers/Numbers1.png",
+            "static/images/Numbers/Numbers2.png",
+            "static/images/Numbers/Numbers3.png",
+            "static/images/Numbers/Numbers4.png",
+            "static/images/Numbers/Numbers5.png",
+            "static/images/Numbers/Numbers6.png",
+            "static/images/Numbers/Numbers7.png",
+            "static/images/Numbers/Numbers8.png",
+            "static/images/Numbers/Numbers9.png",
+            "static/images/Numbers/Numbers10.png",
+            "static/images/Numbers/Numbers11.png",
+            "static/images/Numbers/Numbers12.png",
+            "static/images/Numbers/Numbers13.png",
+            "static/images/Numbers/Numbers14.png",
+            "static/images/Numbers/Numbers15.png",
+            "static/images/Numbers/Numbers16.png",
+            "static/images/Transportation/Transportation1.png",
+            "static/images/Transportation/Transportation2.png",
+            "static/images/Transportation/Transportation3.png",
+            "static/images/Transportation/Transportation4.png",
+            "static/images/Transportation/Transportation5.png",
+            "static/images/Transportation/Transportation6.png",
+            "static/images/Transportation/Transportation7.png",
+            "static/images/Transportation/Transportation8.png",
+            "static/images/Transportation/Transportation9.png",
+            "static/images/Transportation/Transportation10.png",
+            "static/images/Transportation/Transportation11.png",
+            "static/images/Transportation/Transportation12.png",
+            "static/images/Transportation/Transportation13.png",
+            "static/images/Transportation/Transportation14.png",
+            "static/images/Transportation/Transportation15.png",
+            "static/images/Transportation/Transportation16.png",
+            // Add more image sources here...
+        ];
+
+        // Shuffle the array of image sources
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        const gridContainer = document.querySelector('.grid-container');
+        let cells = [];
+
+        // Add icons to the grid
+        imageSources.forEach((imageSource, index) => {
+            const cell = document.createElement('div');
+            cell.className = 'grid-cell';
+            const image = document.createElement('img');
+            image.src = imageSource; // Set the image source
+            image.alt = `Icon ${index + 1}`; // Set the alt attribute
+            cell.appendChild(image); // Append the image to the cell
+            gridContainer.appendChild(cell);
+            cells.push(cell);
+        });
+
+        // Shuffle all cells (icons and blue cells)
+        shuffleArray(cells);
+
+        // Append the shuffled cells back to the grid container
+        cells.forEach(cell => gridContainer.appendChild(cell));
+
+        // Highlight the selected cell
+        function highlightCell(cell) {
+            cell.classList.toggle('highlighted');
+        }
+
+        // Event listener for the signup button
+        document.getElementById('signupBtn').addEventListener('click', () => {
+            const selectedIcons = document.querySelectorAll('.highlighted img');
+            const icons = Array.from(selectedIcons).map(icon => icon.src.substring(icon.src.lastIndexOf('/') + 1));
+
+            if (icons.length === 2) {
+                // Get the user's Gmail from a textbox
+                const gmail = document.getElementById('gmail').value;
+
+                // Send the data to the backend for storage
+                sendDataToBackend(gmail, icons);
+            } else {
+                alert('Please select 2 icons.');
+            }
+        });
+
+        // Function to send data to the backend
+        function sendDataToBackend(gmail, icons) {
+            // Send a POST request to the backend endpoint with the Gmail and icon names
+            fetch('/saveUserData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ gmail, icons })
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Signup successful!');
+                } else {
+                    throw new Error('Failed to save data.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving data.');
+            });
+        }
+
+        // Attach event listeners to the shuffled cells
+        cells.forEach(cell => {
+            cell.addEventListener('click', () => {
+                highlightCell(cell);
+            });
+        });
+    </script>
+</body>
+</html>

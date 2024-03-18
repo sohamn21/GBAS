@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            grid-gap: 10px;
+            border: 5px solid #f7f3f3;
+            padding: 10px;
+        }
+        .grid-cell {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grid-cell img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        .flexbox {
+            display: flex;
+            justify-content: center;
+            padding-top: 1rem;
+        }
+        h1 {
+            display: flex;
+            justify-content: center;
+            color: white;
+        }
+        .highlighted {
+            box-shadow: 0 0 10px #00f; /* Add your desired glow effect */
+        }
+    </style>
+</head>
+<body>
+    <h1>Step 1: Enter your username</h1>
+    <div class="flexbox">
+        <input type="text" id="username" placeholder="Enter your username">
+        <button id="goBtn">Go</button>
+    </div>
+    <div class="flexbox" id="gridSection" style="display: none;">
+        <div class="grid-container" id="grid" tabindex="0"> <!-- Added tabindex to make it focusable -->
+            <!-- Icon images will be inserted here -->
+        </div>
+    </div>
+    <div class="flexbox" id="matchSection" style="display: none;">
+        <label>Enter X difference:</label>
+        <input type="number" id="xInput">
+        <label>Enter Y difference:</label>
+        <input type="number" id="yInput">
+        <button id="matchBtn">Match</button>
+    </div>
+    
+    <script>
+        // Function to fetch icons from the backend based on the username
+        async function fetchIcons(username) {
+            try {
+                const response = await fetch(`/fetchIcons?username=${username}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        return data.icons;
+                    } else {
+                        throw new Error(data.message);
+                    }
+                } else {
+                    throw new Error('Failed to fetch icons');
+                }
+            } catch (error) {
+                console.error('Error fetching icons:', error);
+                alert('An error occurred while fetching icons.');
+                return [];
+            }
+        }
+
+        // Function to shuffle array
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        const gridContainer = document.getElementById('grid');
+        const goBtn = document.getElementById('goBtn');
+        const matchBtn = document.getElementById('matchBtn');
+        const gridSection = document.getElementById('gridSection');
+        const matchSection = document.getElementById('matchSection');
+
+        // Function to populate grid with icons
+        async function populateGrid(username) {
+            const icons = await fetchIcons(username);
+            if (icons.length === 0) {
+                alert('No icons found for the given username.');
+                return;
+            }
+            shuffleArray(icons);
+            icons.forEach(iconSrc => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                const image = document.createElement('img');
+                image.src = iconSrc;
+                cell.appendChild(image);
+                gridContainer.appendChild(cell);
+            });
+            gridSection.style.display = 'block';
+        }
+
+        // Event listener for Go button
+        goBtn.addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            if (!username) {
+                alert('Please enter a username.');
+                return;
+            }
+            populateGrid(username);
+        });
+
+        // Event listener for Match button
+        matchBtn.addEventListener('click', () => {
+            const xDiff = parseInt(document.getElementById('xInput').value);
+            const yDiff = parseInt(document.getElementById('yInput').value);
+            if (isNaN(xDiff) || isNaN(yDiff)) {
+                alert('Please enter valid numbers for X and Y differences.');
+                return;
+            }
+            // Implement matching logic here
+            alert(`X difference: ${xDiff}, Y difference: ${yDiff}`);
+        });
+    </script>
+</body>
+</html>

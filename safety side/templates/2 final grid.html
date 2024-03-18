@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Categories</title>
+</head>
+
+<style>
+    /* Set a beautiful background for the entire page */
+    h1 {
+        text-transform: uppercase;
+    }
+
+    body {
+        background-color: #e1eaea;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+    /* Define the grid container for displaying icons */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        /* 8 columns with equal width */
+        grid-template-rows: repeat(8, 1fr);
+        /* 8 rows with equal height */
+        grid-gap: 10px;
+        /* Gap between grid cells */
+        border: 2px solid #5995bc;
+        /* Blue border around the grid */
+        border-radius: 5px;
+        padding: 10px;
+        /* Add some padding to the grid container */
+        background-color: #faf4f4;
+    }
+
+    /* Define the grid cell styles (icons) */
+    .grid-cell {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #000;
+        /* Black border around each cell */
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        /* Add cursor pointer to indicate selection */
+    }
+
+    img {
+        width: 50px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    #combinations {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+
+    <h1>Select any two icons and describe the sequence of arrow commands</h1>
+    <!-- Grid container for displaying icons based on the selected category -->
+    <div class="grid-container" id="grid"></div>
+
+    <!-- Display combinations result -->
+    <div id="combinations"></div>
+
+    <script>
+        let selectedIcons = [];
+
+        // Function to display icons from all categories
+        function displayIcons() {
+            const grid = document.getElementById('grid');
+
+            // Clear existing icons
+            grid.innerHTML = '';
+
+            // Load and display icons from all categories
+            const categories = ["Flag", "Numbers", "Transportation", "Alphabets"];
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const imgElement = document.createElement('img');
+                    const categoryIndex = (row * 8 + col) % categories.length;
+                    const iconIndex = (row * 8 + col) % 16 + 1;
+                    imgElement.src = `${categories[categoryIndex]}/${categories[categoryIndex]}${iconIndex}.png`;
+                    const gridCell = document.createElement('div');
+                    gridCell.className = 'grid-cell';
+                    gridCell.appendChild(imgElement);
+                    gridCell.addEventListener('click', () => handleIconClick(row, col));
+                    grid.appendChild(gridCell);
+                }
+            }
+        }
+
+        // Function to handle icon click and store selected icons
+        <!-- ... (previous code) ... -->
+
+
+    // Function to handle icon click and store selected icons
+    function handleIconClick(row, col) {
+        selectedIcons.push({ row, col });
+        if (selectedIcons.length === 2 && selectedNumbers.length === 2) {
+            // Save icon locations (x1, y1) and (x2, y2)
+            const x1 = selectedIcons[0].col;
+            const y1 = selectedIcons[0].row;
+            const x2 = selectedIcons[1].col;
+            const y2 = selectedIcons[1].row;
+
+            // Calculate absolute distances
+            const x = Math.abs(x2 - x1);
+            const y = Math.abs(y2 - y1);
+
+            // Normalize coordinates (optional)
+            const normalizedX = x1 / 7; // Assuming an 8x8 grid
+            const normalizedY = y1 / 7;
+
+            // Calculate n
+            const n = x + y;
+
+            // Generate permutations
+            const permutations = generatePermutations(selectedNumbers, n);
+
+            console.log('Absolute Distances (x, y):', x, y);
+            console.log('Normalized Coordinates:', normalizedX, normalizedY);
+            console.log('n:', n);
+            console.log('Permutations:', permutations);
+
+            // Display permutations on the page
+            const permutationsDiv = document.getElementById('permutations');
+            permutationsDiv.innerHTML = 'Permutations:\n';
+
+            for (const permutation of permutations) {
+                permutationsDiv.innerHTML += `${permutation.join(' ')}\n`;
+            }
+        }
+    }
+
+    
+
+
+
+        // Function to generate combinations of an array
+        function generateCombinations(arr, n) {
+            const result = [];
+
+            function combine(current, start) {
+                if (current.length === n) {
+                    result.push(current.slice());
+                    return;
+                }
+
+                for (let i = start; i < arr.length; i++) {
+                    current.push(arr[i]);
+                    combine(current, i);
+                    current.pop();
+                }
+            }
+
+            combine([], 0);
+            return result;
+        }
+
+        // Initial display of icons
+        displayIcons();
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Categories</title>
+</head>
+
+<style>
+  
+    h1 {
+        text-transform: uppercase;
+    }
+
+    body {
+        background-color: #e1eaea;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+    }
+
+   
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        grid-template-rows: repeat(8, 1fr);
+       
+        grid-gap: 10px;
+       
+        border: 2px solid #5995bc;
+       
+        border-radius: 5px;
+        padding: 10px;
+      
+        background-color: #faf4f4;
+    }
+
+   
+    .grid-cell {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #000;
+        
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+ 
+    }
+
+    img {
+        width: 50px;
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+
+    #combinations {
+        margin-top: 20px;
+        font-weight: bold;
+    }
+</style>
+
+<body>
+
+    <h1>Select any two icons and describe the sequence of arrow commands</h1>
+
+    <div class="grid-container" id="grid"></div>
+
+ 
+    <div id="combinations"></div>
+
+    <script>
+        
+        let selectedIcons = [];
+
+      
+        function displayIcons() {
+            const grid = document.getElementById('grid');
+
+          
+            grid.innerHTML = '';
+
+            
+            const categories = ["Flag", "Numbers", "Transportation", "Alphabets"];
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const imgElement = document.createElement('img');
+                    const categoryIndex = (row * 8 + col) % categories.length;
+                    const iconIndex = (row * 8 + col) % 16 + 1;
+                    imgElement.src = `${categories[categoryIndex]}/${categories[categoryIndex]}${iconIndex}.png`;
+                    const gridCell = document.createElement('div');
+                    gridCell.className = 'grid-cell';
+                    gridCell.appendChild(imgElement);
+                    gridCell.addEventListener('click', () => handleIconClick(row, col));
+                    grid.appendChild(gridCell);
+                }
+            }
+        }
+
+       
+        function handleIconClick(row, col) {
+            selectedIcons.push({ row, col });
+            if (selectedIcons.length === 2) {
+               
+                const x1 = selectedIcons[0].col;
+                const y1 = selectedIcons[0].row;
+                const x2 = selectedIcons[1].col;
+                const y2 = selectedIcons[1].row;
+
+               
+                const x = x2 - x1;
+                const y = y2 - y1;
+
+               
+                const n = Math.abs(x) + Math.abs(y);
+
+               
+                const combinations = generateCombinations(["4", "6", "8", "7"], n);
+
+                console.log('Differences (x, y):', x, y);
+                console.log('n:', n);
+                console.log('Combinations:', combinations);
+
+                
+                const combinationsDiv = document.getElementById('combinations');
+                combinationsDiv.innerHTML = `Combinations: ${JSON.stringify(combinations)}`;
+            }
+        }
+
+        
+        function generateCombinations(arr, n) {
+            const result = [];
+
+            function combine(current, start) {
+                if (current.length === n) {
+                    result.push(current.slice());
+                    return;
+                }
+
+                for (let i = start; i < arr.length; i++) {
+                    current.push(arr[i]);
+                    combine(current, i);
+                    current.pop();
+                }
+            }
+
+            combine([], 0);
+            return result;
+        }
+
+        
+        displayIcons();
+    </script>
+
+</body>
+
+</html>

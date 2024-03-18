@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <style>
+        /* Add any additional styles for the signin page */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(8, 50px);
+            grid-template-rows: repeat(8, 50px);
+            grid-gap: 10px;
+            border: 5px solid #f7f3f3;
+            padding: 10px;
+        }
+        .grid-cell {
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            border: 1px solid #000;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grid-cell img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+        }
+        .highlighted {
+            box-shadow: 0 0 10px #00f; /* Add your desired glow effect */
+        }
+    </style>
+</head>
+<body>
+    <h1>Sign In</h1>
+    <form id="signinForm">
+        <div>
+            <label for="gmail">Enter your Gmail address:</label>
+            <input type="email" id="gmail" name="gmail" required>
+        </div>
+        <button id="nextBtn" type="button">Next</button>
+        <button id="signInBtn" type="button" style="display: none;">Sign In</button>
+    </form>
+
+    <div class="grid-container" id="grid">
+        <!-- Icon images will be inserted here -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var selectedIcons = [];
+
+            $('#nextBtn').click(function() {
+                var gmail = $('#gmail').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '/next',
+                    data: { gmail: gmail },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            var shuffledIcons = response.shuffled_icons;
+                            $('#grid').empty();
+                            for (var i = 0; i < shuffledIcons.length; i++) {
+                                var filename = shuffledIcons[i].split('/').pop(); // Extract filename from URL
+                                $('#grid').append('<div class="grid-cell"><img src="' + shuffledIcons[i] + '" alt="Icon ' + (i+1) + '" data-filename="' + filename + '"></div>');
+                            }
+                            $('#nextBtn').hide();
+                            $('#signInBtn').show();
+                        } else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred during the next step.');
+                    }
+                });
+            });
+
+            $(document).on('click', '.grid-cell', function() {
+                if (selectedIcons.length < 2) {
+                    $(this).toggleClass('highlighted');
+                    var iconSrc = $(this).find('img').attr('data-filename'); // Get filename from data attribute
+                    if ($(this).hasClass('highlighted')) {
+                        selectedIcons.push(iconSrc);
+                    } else {
+                        var index = selectedIcons.indexOf(iconSrc);
+                        selectedIcons.splice(index, 1);
+                    }
+                }
+            });
+
+            $('#signInBtn').click(function() {
+                var gmail = $('#gmail').val();
+                if (selectedIcons.length !== 2) {
+                    alert('Please select exactly 2 icons.');
+                    return;
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: '/signin',
+                    data: {
+                        icon1: selectedIcons[0],
+                        icon2: selectedIcons[1],
+                        gmail: gmail
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            alert(response.message);
+                        } else {
+                            alert(response.message);
+                            selectedIcons.forEach(function(iconSrc) {
+                                $('#grid').find('img[data-filename="' + iconSrc + '"]').closest('.grid-cell').addClass('highlighted');
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(xhr.responseText);
+                        alert('An error occurred during signin.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Categories</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        /* Set a beautiful background for the entire page */
+        h1 {
+            text-transform: uppercase;
+        }
+        body {
+            background-color: #e1eaea;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        /* Style for the dropdown box */
+        select {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e6e9eb;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+        /* Center the dropdown */
+        .dropdown-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        /* Define the grid container for displaying icons */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 100px); /* 4 columns with fixed width */
+            grid-gap: 10px; /* Gap between grid cells */
+            border: 2px solid #5995bc; /* Blue border around the grid */
+            border-radius: 5px;
+            padding: 10px; /* Add some padding to the grid container */
+            background-color: #faf4f4;
+        }
+        /* Define the grid cell styles (icons) */
+        .grid-cell {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #000; /* Black border around each cell */
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* Add cursor pointer to indicate selection */
+        }
+        .selected {
+            background-color: #a5d8ff; /* Add a background color for selected icons */
+        }
+        img {
+            width:70px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+        }
+        .gradient-background {
+            background: linear-gradient(300deg,  #b40208,#ffffff);
+            background-size: 180% 180%;
+            animation: gradient-animation 18s ease infinite;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Select any two icons and click "Save"</h1>
+    <div class="dropdown-container">
+        <!-- Dropdown box for selecting categories -->
+        <select id="categorySelect">
+            <option value="Flag">Flag</option>
+            <option value="Numbers">Numbers</option>
+            <option value="Transportation">Transportation</option>
+            <option value="Alphabets">Alphabets</option>
+        </select>
+    </div>
+    <!-- Grid container for displaying icons based on the selected category -->
+    <div class="grid-container" id="grid"></div>
+    <!-- Save icons button -->
+    <button id="saveButton" style="display: none;" onclick="saveIcons()">Save</button>
+
+    <script>
+        let selectedCategory = "Flag";  // Set a default category
+        let selectedIcons = [];
+        let staticPath = "{{ url_for('static', filename='') }}";  // Pass the base path to the JavaScript
+
+        // Function to calculate Manhattan distance between two points
+        function manhattanDistance(point1, point2) {
+            return Math.abs(point1.x - point2.x) + Math.abs(point1.y - point2.y);
+        }
+
+        // Function to display icons based on the selected category
+        function displayIcons() {
+            const categorySelect = document.getElementById('categorySelect');
+            selectedCategory = categorySelect.value;  // Update selectedCategory
+            const grid = document.getElementById('grid');
+
+            // Clear existing icons
+            grid.innerHTML = '';
+
+            // Load and display icons from the selected category folder
+            for (let i = 1; i <= 16; i++) {
+                const imgElement = document.createElement('img');
+                imgElement.src = staticPath + "SEM 4 PROJECT/" + selectedCategory + "/" + selectedCategory + i + ".png";
+                const gridCell = document.createElement('div');
+                gridCell.className = 'grid-cell';
+                gridCell.appendChild(imgElement);
+                gridCell.addEventListener('click', () => handleIconClick(gridCell, i));
+                grid.appendChild(gridCell);
+            }
+        }
+
+        // Function to handle icon click and store selected icons
+        function handleIconClick(gridCell, iconIndex) {
+            if (selectedIcons.length < 2) {
+                selectedIcons.push(iconIndex);
+                gridCell.classList.add('selected');  // Add a class to indicate selection
+
+                if (selectedIcons.length === 2) {
+                    showSaveButton();
+                }
+            }
+        }
+
+        // Function to show the Save button
+        function showSaveButton() {
+            const saveButton = document.getElementById('saveButton');
+            saveButton.style.display = 'block';
+        }
+
+        // Function to save selected icons and send confirmation
+        function saveIcons() {
+            // Implement your logic to save the selected icons (e.g., send to server)
+            console.log('Selected Icons:', selectedIcons);
+
+            // Send confirmation message
+            alert('Saved the icons and sent confirmation to your email.');
+        }
+
+        // Add an event listener to the dropdown box to trigger icon display
+        document.getElementById('categorySelect').addEventListener('change', displayIcons);
+
+        // Initial display of icons
+        displayIcons();
+    </script>
+
+</body>
+</html>
